@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Mean Zero Time Series</title>
+
+<style>
+    /* tell the SVG path to be a thin blue line without any area fill */
+    path {
+        stroke: steelblue;
+        stroke-width: 1;
+        fill: none;
+    }
+
+    .axis {
+        shape-rendering: crispEdges;
+    }
+
+    .x.axis line {
+        stroke: lightgrey;
+    }
+
+    .x.axis .minor {
+        stroke-opacity: .5;
+    }
+
+    .x.axis path {
+        fill: none;
+        stroke: #000;
+    }
+
+    .y.axis line, .y.axis path {
+        fill: none;
+        stroke: #000;
+    }
+
+
+    .axis text {
+        font: 10px sans-serif;
+    }
+
+
+</style>
+
+<header>
+
+</header>
+
+<h1>GA data with mean removed</h1>
+<p>code at jasonbailey.net for Brighton PHP</p>
+
+<div id="graph" class="aGraph" style="position:absolute;top:0px;left:0; float:left;"></div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+    // load json
+
+    d3.json("zero-mean-y.json", function(error, data) {
+
+        plotChart(data);
+
+    });
+
+
+
+
+    function plotChart(data) {
+        //data[0] = 5;
+
+        // http://bl.ocks.org/benjchristensen/2579599
+        var m = [80, 80, 80, 80]; // margins
+        var w = 1000 - m[1] - m[3]; // width
+        var h = 400 - m[0] - m[2]; // height
+        //console.log(data);
+        // var x = d3.scale.linear().domain([0, ((data.length)-550) / 24]).range([0, w]);  // /24 for days
+        var x = d3.scale.linear().domain([0, ((data.length) - 0) / 24]).range([0, w]);  // /24 for days
+
+        //console.log(x);
+
+        //var x = d3.scale.linear().domain([0, (data.length)/8]).range([0, w]);
+        var y = d3.scale.linear().domain([-800, 1500]).range([h, 0]);
+
+        var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
+
+
+        var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
+
+        //console.log(xAxis);
+
+        //console.log(y);
+        var line = d3.svg.line()
+                // assign the X function to plot our line as we wish
+                .x(function(d, i) {
+                    // verbose logging to show what's actually being done
+                    //console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
+                    // return the X coordinate where we want to plot this datapoint
+                    return x(i) / 24;
+                })
+                .y(function(d, i) {
+                    // verbose logging to show what's actually being done
+                    //  console.log('Plotting Y value for data point: ' + d + ' to be at: ' + i + " using our yScale.");
+                    // return the Y coordinate where we want to plot this datapoint
+
+
+                    return y(d);
+                });
+
+        // Add an SVG element with the desired dimensions and margin.
+        var graph = d3.select("#graph").append("svg:svg")
+                .attr("width", w + m[1] + m[3])
+                .attr("height", h + m[0] + m[2])
+                .append("svg:g")
+                .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+        graph.append("svg:path").attr("d", line(data)).style("stroke", "green");;
+
+        graph.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + h + ")")
+                .call(xAxis);
+
+
+        graph.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+
+        graph.append("text")
+                .attr("class", "x label")
+                .attr("text-anchor", "end")
+                .attr("x", w - (w / 2))
+                .attr("y", h + 45)
+                .text("Time in Days");
+
+        graph.append("text")
+                .attr("class", "y label")
+                .attr("text-anchor", "end")
+                .attr("y", -60)
+                .attr("x", -60)
+                .attr("dy", ".75em")
+                .attr("transform", "rotate(-90)")
+                .text("Number of Visits");
+
+
+    }
+
+// http://stackoverflow.com/questions/13715900/d3-js-plotting-multiple-data-sets-from-separate-files
+
+
+</script>
+
+<footer>
+
+</footer>

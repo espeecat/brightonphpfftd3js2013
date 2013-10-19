@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>GA data and some components via FFT</title>
+
+<style>
+    /* tell the SVG path to be a thin blue line without any area fill */
+    path {
+        stroke: steelblue;
+        stroke-width: 1;
+        fill: none;
+    }
+
+    .axis {
+        shape-rendering: crispEdges;
+    }
+
+    .x.axis line {
+        stroke: lightgrey;
+    }
+
+    .x.axis .minor {
+        stroke-opacity: .5;
+    }
+
+    .x.axis path {
+        display: none;
+    }
+
+    .y.axis line, .y.axis path {
+        fill: none;
+        stroke: #000;
+    }
+
+
+    .axis text {
+        font: 10px sans-serif;
+    }
+
+
+</style>
+
+<header>
+
+</header>
+
+<h1>GA data and some components via FFT</h1>
+
+<div id="graph" class="aGraph" style="position:absolute;top:0px;left:0; float:left;"></div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+    // load json
+
+    d3.json("jseries.json", function(error, data) {
+        //logData(data);
+        //console.log(data);
+        plotChart(data);
+
+    });
+
+
+
+
+
+    function plotChart(data) {
+        var width = 700;
+        var height = 525;
+        var padding = 40;
+
+        var x = d3.scale.linear().domain([0, 256]).range([0, width]);
+        var y = d3.scale.linear().domain([1500, -800]).range([0, height]);
+
+        var graph = d3.select("#graph").append("svg:svg")
+                .attr("width", width + padding * 2).
+                attr("height", height + padding * 2)
+                .attr("transform", "translate(" + 150 + "," + 50 + ")");
+        //.append("svg:g").constructor
+
+
+        var line1 = d3.svg.line()
+                .x(function(d, i) {
+                    return x(d.point);
+                }).
+                y(function(d) {
+                    return y(d.series1);
+                })
+
+
+        graph.append("svg:path").attr("d", line1(data))
+                .style("stroke", "red");
+
+
+
+        var line2 = d3.svg.line()
+                .x(function(d, i) {
+                    return x(d.point);
+                }).
+                y(function(d) {
+                    return y(d.series2);
+                });
+        graph.append("svg:path").attr("d", line2(data)).style("stroke", "green");
+        ;
+
+
+        var line3 = d3.svg.line()
+                .x(function(d, i) {
+                    return x(d.point);
+                }).
+                y(function(d) {
+                    return y(d.series3);
+                });
+        graph.append("svg:path").attr("d", line3(data)).style("stroke", "blue");
+        ;
+
+        var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
+
+
+        var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
+
+        graph.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+
+        graph.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+
+    }
+
+
+
+
+</script>
+
+<footer>
+
+</footer>
