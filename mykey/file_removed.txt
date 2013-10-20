@@ -1,0 +1,2 @@
+Secret key removed. Get yours from Google. Service account set up.
+https://code.google.com/apis/console/
